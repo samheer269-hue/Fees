@@ -1,24 +1,23 @@
 const TelegramBot = require('node-telegram-bot-api');
 const token = process.env.BOT_TOKEN;
 
-// Initialize bot with polling
 const bot = new TelegramBot(token, { polling: true });
 
-// START COMMAND - Fee structure display
+// START - Purana message format, bas Premium Emoji ke sath
 bot.onText(/\/start/, (msg) => {
-    const startMsg = 
-        "👑 <b>Fee Structure:</b>\n\n" +
-        "<tg-emoji emoji-id='5368324170671202286'>•</tg-emoji> <b>UNDER 400</b> - Rs 10\n" +
-        "<tg-emoji emoji-id='5368324170671202286'>•</tg-emoji> <b>Rs 401 To Rs 2000</b> - 3%\n" +
-        "<tg-emoji emoji-id='5368324170671202286'>•</tg-emoji> <b>Rs 2001 To Rs 5K</b> - 3.5%\n" +
-        "<tg-emoji emoji-id='5368324170671202286'>•</tg-emoji> <b>Upper Than Rs 5K</b> - 3%\n\n" +
+    bot.sendMessage(
+        msg.chat.id,
+        "<tg-emoji emoji-id='5368324170671202286'>•</tg-emoji> UNDER 400 - Rs 10\n" +
+        "<tg-emoji emoji-id='5368324170671202286'>•</tg-emoji> Rs 401 To Rs 2000 - 3%\n" +
+        "<tg-emoji emoji-id='5368324170671202286'>•</tg-emoji> Rs 2001 To Rs 5K - 3.5%\n" +
+        "<tg-emoji emoji-id='5368324170671202286'>•</tg-emoji> Upper Than Rs 5K - 3%\n\n" +
         "If you want your own custom bot, contact : @Cixxu\n\n" +
-        "Powered by @Cixxu <tg-emoji emoji-id='6296577138615125756'>⚡</tg-emoji>";
-
-    bot.sendMessage(msg.chat.id, startMsg, { parse_mode: 'HTML' });
+        "⚡ Powered By @Cixxu",
+        { parse_mode: 'HTML' }
+    );
 });
 
-// COMMON FUNCTION - Fee Calculator
+// COMMON FUNCTION
 function calculateFee(amt) {
     let fee = 0;
     let percent = "";
@@ -40,23 +39,20 @@ function calculateFee(amt) {
     return { fee, percent };
 }
 
-// HELPER FUNCTION - Safe Input Parser
+// HELPER: parse amount safely
 function parseAmount(input) {
     const amt = parseFloat(input);
     return isNaN(amt) || amt <= 0 ? null : amt;
 }
 
-// /p COMMAND - Plus/Add fee
-bot.onText(/\/p(?:@[\w_]+)?\s*(\d+(?:\.\d+)?)/, (msg, match) => {
+// /p command (Purana plain text style + aapki Premium Emoji IDs)
+bot.onText(/\/p(?:\s+(\d+(?:\.\d+)?))?/, (msg, match) => {
     const amt = parseAmount(match[1]);
 
     if (!amt) {
         bot.sendMessage(
             msg.chat.id,
-            "⚠️ <b>Galat Format!</b>\n\n" +
-            "💡 Use like: <code>/p 1000</code>\n\n" +
-            "Powered by @Cixxu <tg-emoji emoji-id='6296577138615125756'>⚡</tg-emoji>",
-            { parse_mode: 'HTML' }
+            "Use like: /p <amount>\nExample: /p 1000\n\n⚡ Powered By @Cixxu"
         );
         return;
     }
@@ -64,26 +60,22 @@ bot.onText(/\/p(?:@[\w_]+)?\s*(\d+(?:\.\d+)?)/, (msg, match) => {
     const { fee, percent } = calculateFee(amt);
     const total = amt + fee;
 
-    const responseMsg = 
-        `<tg-emoji emoji-id="4956719506027185156">💰</tg-emoji> <b>Amount:</b> ₹${amt}\n` +
-        `<tg-emoji emoji-id="5195100606250889609">📉</tg-emoji> <b>Fees:</b> ₹${fee.toFixed(2)} (${percent})\n` +
-        `<tg-emoji emoji-id="4958734459869332468">📊</tg-emoji> <b>Total:</b> ₹${total.toFixed(2)}\n\n` +
-        `Powered by @Cixxu <tg-emoji emoji-id="6296577138615125756">⚡</tg-emoji>`;
-
-    bot.sendMessage(msg.chat.id, responseMsg, { parse_mode: 'HTML' });
+    bot.sendMessage(
+        msg.chat.id,
+        `<tg-emoji emoji-id="4956719506027185156">💰</tg-emoji> ${amt} + <tg-emoji emoji-id="5195100606250889609">📉</tg-emoji> ${fee.toFixed(2)} (${percent}) = <tg-emoji emoji-id="4958734459869332468">📊</tg-emoji> ${total.toFixed(2)}\n\n` +
+        `Powered by @cixxu <tg-emoji emoji-id="6296577138615125756">⚡</tg-emoji>`,
+        { parse_mode: 'HTML' }
+    );
 });
 
-// /c COMMAND - Cut/Subtract fee
-bot.onText(/\/c(?:@[\w_]+)?\s*(\d+(?:\.\d+)?)/, (msg, match) => {
+// /c command (Purana plain text style + aapki Premium Emoji IDs)
+bot.onText(/\/c(?:\s+(\d+(?:\.\d+)?))?/, (msg, match) => {
     const amt = parseAmount(match[1]);
 
     if (!amt) {
         bot.sendMessage(
             msg.chat.id,
-            "⚠️ <b>Galat Format!</b>\n\n" +
-            "💡 Use like: <code>/c 1000</code>\n\n" +
-            "Powered by @Cixxu <tg-emoji emoji-id='6296577138615125756'>⚡</tg-emoji>",
-            { parse_mode: 'HTML' }
+            "Use like: /c <amount>\nExample: /c 1000\n\n⚡ Powered By @Cixxu"
         );
         return;
     }
@@ -91,11 +83,10 @@ bot.onText(/\/c(?:@[\w_]+)?\s*(\d+(?:\.\d+)?)/, (msg, match) => {
     const { fee, percent } = calculateFee(amt);
     const final = amt - fee;
 
-    const responseMsg = 
-        `<tg-emoji emoji-id="4956719506027185156">💰</tg-emoji> <b>Amount:</b> ₹${amt}\n` +
-        `<tg-emoji emoji-id="5195100606250889609">📉</tg-emoji> <b>Fees:</b> ₹${fee.toFixed(2)} (${percent})\n` +
-        `<tg-emoji emoji-id="4958734459869332468">📊</tg-emoji> <b>Final:</b> ₹${final.toFixed(2)}\n\n` +
-        `Powered by @Cixxu <tg-emoji emoji-id="6296577138615125756">⚡</tg-emoji>`;
-
-    bot.sendMessage(msg.chat.id, responseMsg, { parse_mode: 'HTML' });
+    bot.sendMessage(
+        msg.chat.id,
+        `<tg-emoji emoji-id="4956719506027185156">💰</tg-emoji> ${amt} - <tg-emoji emoji-id="5195100606250889609">📉</tg-emoji> ${fee.toFixed(2)} (${percent}) = <tg-emoji emoji-id="4958734459869332468">📊</tg-emoji> ${final.toFixed(2)}\n\n` +
+        `Powered by @cixxu <tg-emoji emoji-id="6296577138615125756">⚡</tg-emoji>`,
+        { parse_mode: 'HTML' }
+    );
 });
