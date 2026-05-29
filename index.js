@@ -3,7 +3,7 @@ const token = process.env.BOT_TOKEN;
 
 const bot = new TelegramBot(token, { polling: true });
 
-// START - Purana format custom link premium emoji ke sath
+// START - works anywhere
 bot.onText(/\/start/, (msg) => {
     bot.sendMessage(
         msg.chat.id,
@@ -44,7 +44,7 @@ function parseAmount(input) {
     return isNaN(amt) || amt <= 0 ? null : amt;
 }
 
-// /p command - Purana format with Working Custom Premium Emojis
+// /p command
 bot.onText(/\/p(?:\s+(\d+(?:\.\d+)?))?/, (msg, match) => {
     const amt = parseAmount(match[1]);
 
@@ -59,17 +59,13 @@ bot.onText(/\/p(?:\s+(\d+(?:\.\d+)?))?/, (msg, match) => {
     const { fee, percent } = calculateFee(amt);
     const total = amt + fee;
 
-    // Yahan HTML style anchor tag use kiya hai premium emoji ke liye
-    const textMsg = 
-        `<a href="tg://emoji?id=4956719506027185156">💰</a> ${amt} + ` +
-        `<a href="tg://emoji?id=5195100606250889609">📉</a> ${fee.toFixed(2)} (${percent}) = ` +
-        `<a href="tg://emoji?id=4958734459869332468">📊</a> ${total.toFixed(2)}\n\n` +
-        `Powered by @cixxu <a href="tg://emoji?id=6296577138615125756">⚡</a>`;
-
-    bot.sendMessage(msg.chat.id, textMsg, { parse_mode: 'HTML' });
+    bot.sendMessage(
+        msg.chat.id,
+        `₹${amt} + ₹${fee.toFixed(2)} (${percent}) = ₹${total.toFixed(2)}`
+    );
 });
 
-// /c command - Purana format with Working Custom Premium Emojis
+// /c command
 bot.onText(/\/c(?:\s+(\d+(?:\.\d+)?))?/, (msg, match) => {
     const amt = parseAmount(match[1]);
 
@@ -84,12 +80,8 @@ bot.onText(/\/c(?:\s+(\d+(?:\.\d+)?))?/, (msg, match) => {
     const { fee, percent } = calculateFee(amt);
     const final = amt - fee;
 
-    // Yahan HTML style anchor tag use kiya hai premium emoji ke liye
-    const textMsg = 
-        `<a href="tg://emoji?id=4956719506027185156">💰</a> ${amt} - ` +
-        `<a href="tg://emoji?id=5195100606250889609">📉</a> ${fee.toFixed(2)} (${percent}) = ` +
-        `<a href="tg://emoji?id=4958734459869332468">📊</a> ${final.toFixed(2)}\n\n` +
-        `Powered by @cixxu <a href="tg://emoji?id=6296577138615125756">⚡</a>`;
-
-    bot.sendMessage(msg.chat.id, textMsg, { parse_mode: 'HTML' });
+    bot.sendMessage(
+        msg.chat.id,
+        `₹${amt} - ₹${fee.toFixed(2)} (${percent}) = ₹${final.toFixed(2)}`
+    );
 });
